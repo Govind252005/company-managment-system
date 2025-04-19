@@ -5,6 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node index.js",
+    "build": "npx prisma generate",
     "dev": "nodemon index.js"
   },
   "dependencies": {
