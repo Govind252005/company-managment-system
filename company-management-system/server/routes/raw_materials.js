@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const sql = require('../db');
+const prisma = require('../db');
 
 router.get('/', async (req, res) => {
   try {
-    const raw_materials = await sql`SELECT * FROM raw_materials`;
+    const raw_materials = await prisma.rawMaterial.findMany();
     res.json(raw_materials);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -12,12 +12,12 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { name, quantity, price } = req.body;
+  const { name, quantity } = req.body;
   try {
-    const result = await sql`
-      INSERT INTO raw_materials (name, quantity, price) VALUES (${name}, ${quantity}, ${price}) RETURNING *
-    `;
-    res.json(result[0]);
+    const material = await prisma.rawMaterial.create({
+      data: { name, quantity: Number(quantity) }
+    });
+    res.json(material);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -25,11 +25,12 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, quantity, price } = req.body;
+  const { name, quantity } = req.body;
   try {
-    await sql`
-      UPDATE raw_materials SET name=${name}, quantity=${quantity}, price=${price} WHERE id=${id}
-    `;
+    await prisma.rawMaterial.update({
+      where: { id: Number(id) },
+      data: { name, quantity: Number(quantity) }
+    });
     res.sendStatus(204);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -39,7 +40,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await sql`DELETE FROM raw_materials WHERE id=${id}`;
+    await prisma.rawMaterial.delete({ where: { id: Number(id) } });
     res.sendStatus(204);
   } catch (err) {
     res.status(500).json({ error: err.message });

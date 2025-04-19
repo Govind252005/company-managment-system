@@ -17,7 +17,7 @@ const ProductMaterials = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get('/api/product_materials', {
+      const res = await axios.get('/api/product-materials', {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       setProductMaterials(res.data);
@@ -42,7 +42,7 @@ const ProductMaterials = () => {
     setLoading(true);
     setError('');
     try {
-      await axios.delete(`/api/product_materials/${id}`, {
+      await axios.delete(`/api/product-materials/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
@@ -57,7 +57,7 @@ const ProductMaterials = () => {
     setError('');
     try {
       const method = editId ? 'put' : 'post';
-      const url = editId ? `/api/product_materials/${editId}` : '/api/product_materials';
+      const url = editId ? `/api/product-materials/${editId}` : '/api/product-materials';
       await axios[method](url, formData, {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
       });
@@ -81,11 +81,11 @@ const ProductMaterials = () => {
       {loading ? (
         <div className="text-center py-8">Loading...</div>
       ) : (
-        <DataTable data={productMaterials} columns={['id', 'product_id', 'raw_material_id', 'quantity']} onEdit={handleEdit} onDelete={handleDelete} />
+        <DataTable data={productMaterials} columns={['id', 'product_id', 'material_id', 'quantity']} onEdit={handleEdit} onDelete={handleDelete} />
       )}
       <FormModal
         isOpen={isOpen}
-        fields={['product_id', 'raw_material_id', 'quantity']}
+        fields={['product_id', 'material_id', 'quantity']}
         formData={formData}
         setFormData={setFormData}
         onSubmit={handleSubmit}

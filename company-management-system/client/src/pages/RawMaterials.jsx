@@ -18,7 +18,7 @@ const RawMaterials = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get('/api/raw_materials', {
+      const res = await axios.get('/api/raw-materials', {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       setMaterials(res.data);
@@ -43,7 +43,7 @@ const RawMaterials = () => {
     setLoading(true);
     setError('');
     try {
-      await axios.delete(`/api/raw_materials/${id}`, {
+      await axios.delete(`/api/raw-materials/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
@@ -58,7 +58,7 @@ const RawMaterials = () => {
     setError('');
     try {
       const method = editId ? 'put' : 'post';
-      const url = editId ? `/api/raw_materials/${editId}` : '/api/raw_materials';
+      const url = editId ? `/api/raw-materials/${editId}` : '/api/raw-materials';
       await axios[method](url, formData, {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
       });

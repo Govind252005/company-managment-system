@@ -1,8 +1,6 @@
-const postgres = require('postgres')
+const {PrismaClient} = require("@prisma/client");
+// const { PrismaClient } = pkg;
 
-const dotenv = require('dotenv')
-dotenv.config()
-const connectionString = process.env.DATABASE_URL
-const sql = postgres(connectionString)
+const prisma = new PrismaClient();
 
-module.exports = sql;
+module.exports = prisma;

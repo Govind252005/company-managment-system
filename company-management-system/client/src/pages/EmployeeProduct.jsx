@@ -18,7 +18,7 @@ const EmployeeProduct = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await axios.get('/api/employee_product', {
+      const res = await axios.get('/api/employee-product', {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       setRecords(res.data);
@@ -43,7 +43,7 @@ const EmployeeProduct = () => {
     setLoading(true);
     setError('');
     try {
-      await axios.delete(`/api/employee_product/${id}`, {
+      await axios.delete(`/api/employee-product/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchData();
@@ -58,7 +58,7 @@ const EmployeeProduct = () => {
     setError('');
     try {
       const method = editId ? 'put' : 'post';
-      const url = editId ? `/api/employee_product/${editId}` : '/api/employee_product';
+      const url = editId ? `/api/employee-product/${editId}` : '/api/employee-product';
       await axios[method](url, formData, {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
       });

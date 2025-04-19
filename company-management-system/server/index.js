@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db');
+const morgan = require('morgan');
 
 const app = express();
 app.use(cors());
@@ -19,6 +19,8 @@ const productMaterialsRoute = require('./routes/product_materials');
 const statsRoute = require('./routes/stats');
 const authRoute = require('./routes/auth');
 
+app.use(morgan('dev'));
+
 // ✅ Route mounting
 app.use('/api/employees', employeesRoute);
 app.use('/api/products', productsRoute);
@@ -34,9 +36,11 @@ app.use('/api/auth', authRoute);
 
 // ✅ Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+
+app.listen(PORT, 'localhost', () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
 });
+
 app.get('/', (req, res) => {
     res.send('🎉 Backend is working fine!');
   });

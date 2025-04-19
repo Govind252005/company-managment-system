@@ -1,39 +1,62 @@
 const express = require('express');
 const router = express.Router();
-const sql = require('../db');
+const prisma = require('../db');
 
 router.get('/', async (req, res) => {
   try {
-    const result = await sql`
-      SELECT pm.product_id, pm.material_id, p.name AS product_name, r.name AS material_name
-      FROM product_materials pm
-      JOIN products p ON pm.product_id = p.id
-      JOIN raw_materials r ON pm.material_id = r.id
-    `;
-    res.json(result);
+    const result = await prisma.productMaterial.findMany({
+      include: {
+        product: { select: { name: true } },
+        rawMaterial: { select: { name: true } }
+      }
+    });
+    const mapped = result.map(pm => ({
+      product_id: pm.product_id,
+      material_id: pm.material_id,
+      product_name: pm.product?.name,
+      material_name: pm.rawMaterial?.name
+    }));
+    res.json(mapped);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 router.post('/', async (req, res) => {
-  const { product_id, material_id } = req.body;
+  let { product_id, material_id } = req.body;
+  product_id = Number(product_id);
+  material_id = Number(material_id);
+  if (isNaN(product_id) || isNaN(material_id)) {
+    console.log('Invalid product_id or material_id', product_id, material_id);
+    
+    return res.status(400).json({ error: 'Invalid product_id or material_id' });
+  }
   try {
-    const result = await sql`
-      INSERT INTO product_materials (product_id, material_id) VALUES (${product_id}, ${material_id}) RETURNING *
-    `;
-    res.json(result[0]);
+    const productMaterial = await prisma.productMaterial.create({
+      data: { product_id, material_id }
+    });
+    res.json(productMaterial);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 router.delete('/', async (req, res) => {
-  const { product_id, material_id } = req.body;
+  let { product_id, material_id } = req.body;
+  product_id = Number(product_id);
+  material_id = Number(material_id);
+  if (isNaN(product_id) || isNaN(material_id)) {
+    return res.status(400).json({ error: 'Invalid product_id or material_id' });
+  }
   try {
-    await sql`
-      DELETE FROM product_materials WHERE product_id=${product_id} AND material_id=${material_id}
-    `;
+    await prisma.productMaterial.delete({
+      where: {
+        product_id_material_id: {
+          product_id,
+          material_id
+        }
+      }
+    });
     res.sendStatus(204);
   } catch (err) {
     res.status(500).json({ error: err.message });

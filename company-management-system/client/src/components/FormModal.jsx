@@ -13,7 +13,12 @@ const FormModal = ({ isOpen, fields, formData, setFormData, onSubmit, onClose })
   if (!isOpen) return null;
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    // Convert to number only for fields ending with _id
+    setFormData(prev => ({
+      ...prev,
+      [name]: name.endsWith('_id') && value !== '' ? Number(value) : value
+    }));
   };
 
   return (
@@ -23,7 +28,7 @@ const FormModal = ({ isOpen, fields, formData, setFormData, onSubmit, onClose })
         {fields.map(field => (
           <input
             key={field}
-            type="text"
+            type={field.endsWith('_id') || field === 'quantity' || field === 'price' ? 'number' : 'text'}
             name={field}
             placeholder={field}
             value={formData[field] || ''}

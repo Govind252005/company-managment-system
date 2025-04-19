@@ -1,0 +1,107 @@
+// This is your Prisma schema file, generated from db.sql
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Department {
+  id          Int       @id @default(autoincrement())
+  name        String?
+  contact_no  String?
+  head        String?
+  employees   Employee[] @relation("DepartmentEmployees")
+  products    Product[]  @relation("DepartmentProducts")
+}
+
+model Employee {
+  id             Int               @id @default(autoincrement())
+  name           String?
+  address        String?
+  designation    String?
+  contact_no     String?
+  salary         Decimal?
+  department_id  Int?
+  department     Department?       @relation("DepartmentEmployees", fields: [department_id], references: [id], onDelete: SetNull)
+  defects        Defect[]
+  employeeProducts EmployeeProduct[]
+}
+
+model Product {
+  id             Int               @id @default(autoincrement())
+  name           String?
+  type           String?
+  price          Decimal?
+  mfd            DateTime?         @db.Date
+  department_id  Int?
+  department     Department?       @relation("DepartmentProducts", fields: [department_id], references: [id], onDelete: SetNull)
+  defects        Defect[]
+  productMaterials ProductMaterial[]
+  employeeProducts EmployeeProduct[]
+}
+
+model Defect {
+  id           Int       @id @default(autoincrement())
+  product_id   Int
+  employee_id  Int?
+  description  String?
+  defect_date  DateTime?  @db.Date
+  status       String?
+
+  product      Product    @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  employee     Employee?  @relation(fields: [employee_id], references: [id], onDelete: SetNull)
+}
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  address     String?
+  contact_no  String?
+}
+
+model Supplier {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  address     String?
+  contact_no  String?
+}
+
+model RawMaterial {
+  id               Int                @id @default(autoincrement())
+  name             String?
+  quantity         Int?
+  price            Decimal?
+  productMaterials ProductMaterial[]
+}
+
+model ProductMaterial {
+  product_id  Int
+  material_id Int
+
+  product     Product     @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  rawMaterial RawMaterial @relation(fields: [material_id], references: [id], onDelete: Cascade)
+
+  @@id([product_id, material_id])
+}
+
+model EmployeeProduct {
+  product_id  Int
+  employee_id Int
+
+  product     Product   @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  employee    Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@id([product_id, employee_id])
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String
+  role     String  @default("admin")
+}
